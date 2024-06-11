@@ -63,11 +63,10 @@ def process_file(file, voice):
 
 
     # create zip of all audio files
-    os.system(f"zip -r result.zip Result/{voice}/{file.name.split('/')[-1].split('.')[0]}")
+    os.system(f"zip -r Result/{voice}/result.zip Result/{voice}/{file.name.split('/')[-1].split('.')[0]}")
     
     # return a zip of all audio files
-    with open("result.zip", "rb") as f:
-        return f.read()
+    return "\n\n".join(audio_outputs)
 
 # all fileanmes in voices folder
 voices = [f.name.split(".")[0] for f in os.scandir("voices") if f.is_file()]
@@ -83,7 +82,7 @@ def main():
         ],
         outputs=[
             # return a zip of all audio files
-            gr.File(label="Voiceover Text")
+            gr.Textbox(label="Generated Audio Files"),
         ],
         title="Text to Speech App",
         description="Upload a .txt or .docx file, select a language, and generate voiceovers for the content."
