@@ -1,0 +1,93 @@
+
+import torch
+from TTS.api import TTS
+import os
+import docx2txt
+import gradio as gr
+import json
+
+folder = '.'
+
+
+os.environ["COQUI_TOS_AGREED"] = "1"
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
+tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(device)
+
+folder = '.'
+
+with open(f"{folder}/config.json") as f:
+    config_settings = json.load(f)
+
+def generate_voiceover(text, voice, n, name):
+    if not os.path.exists(f"{folder}/Result/{voice}"):
+        os.makedirs(f"{folder}/Result/{voice}")
+    if not os.path.exists(f"{folder}/Result/{voice}/{name}"):
+        os.makedirs(f"{folder}/Result/{voice}/{name}")
+    file_path = f"{folder}/Result/{voice}/{name}/{n}.mp3"
+    tts.tts_to_file(text=text,  speaker_wav=f'{folder}/voices/{voice}.mp3', language=config_settings["voices"][f'{voice}.mp3'], file_path= file_path)
+    # speed up for 1.2
+    os.system("play " +file_path+" tempo {}".format(config_settings["speed"]))
+
+    return file_path
+
+
+
+def process_file(file, voice):
+    if file is None:
+        return "Please upload a file.", None
+
+    file_type = file.name.split(".")[-1]
+
+    if file_type == "txt":
+        with open(file) as file_:
+          text = file_.read()
+    elif file_type == "docx":
+        text  = docx2txt.process()
+    else:
+        return "Unsupported file type.", None
+
+    if not text.strip():
+        return "File is empty. Please upload a file with content.", None
+
+    paragraphs = text.split("\n\n")
+    print(paragraphs)
+    audio_outputs = []
+    n=1
+    for paragraph in paragraphs:
+        if paragraph.strip():
+            audio_placeholder = generate_voiceover(paragraph, voice, n, file.name.split("/")[-1].split(".")[0])
+            audio_outputs.append(audio_placeholder)
+            n+=1
+
+
+    # create zip of all audio files
+    os.system(f"zip -r result.zip Result/{voice}/{file.name.split('/')[-1].split('.')[0]}")
+    
+    # return a zip of all audio files
+    with open("result.zip", "rb") as f:
+        return f.read()
+
+# all fileanmes in voices folder
+voices = [f.name.split(".")[0] for f in os.scandir("voices") if f.is_file()]
+
+
+def main():
+    gr.Interface(
+        fn=process_file,
+        inputs=[
+            gr.File(file_types=['.txt', '.docx'], label="Upload a file"),
+
+            gr.Dropdown(voices, label="Select a language")
+        ],
+        outputs=[
+            # return a zip of all audio files
+            gr.File(label="Voiceover Text")
+        ],
+        title="Text to Speech App",
+        description="Upload a .txt or .docx file, select a language, and generate voiceovers for the content."
+    ).launch(debug=True)
+
+if __name__ == "__main__":
+    main()
