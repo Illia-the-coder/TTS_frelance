@@ -1,4 +1,3 @@
-
 import torch
 from TTS.api import TTS
 import os
@@ -27,9 +26,9 @@ def generate_voiceover(text, voice, n, name):
         tts.tts_to_file(text=text,  speaker_wav=f'{folder}/voices/{voice}.mp3', language=config_settings["voices"][f'{voice}.mp3'], file_path= file_path)
     except:
         tts.tts_to_file(text=text,  speaker_wav=f'{folder}/voices/{voice}.mp3', file_path= file_path)
-        
+
     # speed up for 1.2
-    os.system("play " +file_path+" tempo {}".format(config_settings["speed"]))
+    # os.system("play " +file_path+" tempo {}".format(config_settings["speed"]))
 
     return file_path
 
@@ -37,9 +36,10 @@ def generate_voiceover(text, voice, n, name):
 
 def process_file(file, voice):
     if file is None:
-        return "Please upload a file."
+        return None
     if voice is None:
-        return "Please select a voice."
+        return None
+    file.name = file.name.replace(" ", "_")
 
     file_type = file.name.split(".")[-1]
 
@@ -47,12 +47,12 @@ def process_file(file, voice):
         with open(file) as file_:
           text = file_.read()
     elif file_type == "docx":
-        text  = docx2txt.process()
+        text  = docx2txt.process(file)
     else:
-        return "Unsupported file type."
+        return None
 
     if not text.strip():
-        return "File is empty. Please upload a file with content."
+        return None
 
     paragraphs = text.split("\n\n")
     print(paragraphs)
@@ -66,10 +66,10 @@ def process_file(file, voice):
 
 
     # create zip of all audio files
-    os.system(f"zip -r {folder}/Result/{voice}/result.zip {folder}/Result/{voice}/{file.name.split('/')[-1].split('.')[0]}")
-    
+    os.system(f"zip -r {folder}/Result/result.zip {folder}/Result/{voice}/{file.name.split('/')[-1].split('.')[0]}")
+
     # return a zip of all audio files
-    return "\n\n".join(audio_outputs)
+    return f"{folder}/Result/result.zip"
 
 # all fileanmes in voices folder
 voices = [f.name.split(".")[0] for f in os.scandir(f"{folder}/voices") if f.is_file()]
@@ -85,7 +85,7 @@ def main():
         ],
         outputs=[
             # return a zip of all audio files
-            gr.Textbox(label="Generated Audio Files"),
+            gr.File(label="Generated Audio Files"),
         ],
         title="Text to Speech App",
         description="Upload a .txt or .docx file, select a language, and generate voiceovers for the content."
