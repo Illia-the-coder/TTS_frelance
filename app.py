@@ -89,7 +89,7 @@ def main():
         ],
         title="Text to Speech App",
         description="Upload a .txt or .docx file, select a language, and generate voiceovers for the content."
-    ).launch(debug=True)
+    ).launch(debug=True, server_port=80)
 
 if __name__ == "__main__":
     main()
