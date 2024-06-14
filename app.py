@@ -15,8 +15,16 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(device)
 
 
+
+
 with open(f"{folder}/config.json") as f:
     config_settings = json.load(f)
+
+# all fileanmes in voices folder
+voices = [f.name.split(".")[0] for f in os.scandir(f"{folder}/voices") if f.is_file()]
+
+if voices!=config_settings["voices"].keys():
+    raise ValueError("config.json and voices folder are not in sync!")  
 
 def generate_voiceover(text, voice, n, name):
     if not os.path.exists(f"{folder}/Result/{voice}/{name}"):
@@ -71,8 +79,6 @@ def process_file(file, voice):
     # return a zip of all audio files
     return f"{folder}/Result/result.zip"
 
-# all fileanmes in voices folder
-voices = [f.name.split(".")[0] for f in os.scandir(f"{folder}/voices") if f.is_file()]
 
 
 def main():
