@@ -36,7 +36,7 @@ def generate_voiceover(text, voice, n, name):
         os.makedirs(f"{folder}/Result/{voice}/{name}")
     file_path = f"{folder}/Result/{voice}/{name}/{n}.mp3"
 
-        tts.tts_to_file(text=text,  speaker_wav=f'{folder}/voices/{voice}.mp3', language=config_settings["voices"][f'{voice}.mp3'], file_path= file_path)
+    tts.tts_to_file(text=text,  speaker_wav=f'{folder}/voices/{voice}.mp3', language=config_settings["voices"][f'{voice}.mp3'], file_path= file_path)
 
     # speed up for 1.2
     # os.system("play " +file_path+" tempo {}".format(config_settings["speed"]))
