@@ -24,7 +24,11 @@ with open(f"{folder}/config.json") as f:
 voices = [f.name.split(".")[0] for f in os.scandir(f"{folder}/voices") if f.is_file()]
 
 if voices!=config_settings["voices"].keys():
+    # print which file makes voices not in sync
+    print(set(voices).difference(config_settings["voices"].keys()))
+    print("You should update https://github.com/Illia-the-coder/TTS_frelance/blob/main/config.json and voices folder")
     raise ValueError("config.json and voices folder are not in sync!")  
+
 
 def generate_voiceover(text, voice, n, name):
     if not os.path.exists(f"{folder}/Result/{voice}/{name}"):
