@@ -47,7 +47,7 @@ def generate_voiceover(text, voice, n, name):
 
 
 
-def process_file(file, voice):
+def process_file(file, voice, progress=gr.Progress()):
     if file is None:
         return None
     if voice is None:
@@ -75,6 +75,7 @@ def process_file(file, voice):
         if paragraph.strip():
             audio_placeholder = generate_voiceover(paragraph, voice, n, file.name.split("/")[-1].split(".")[0])
             audio_outputs.append(audio_placeholder)
+            progress(1/len(paragraphs))
             n+=1
 
 
