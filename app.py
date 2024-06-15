@@ -12,7 +12,7 @@ os.environ["COQUI_TOS_AGREED"] = "1"
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(device)
+tts = TTS("tts_models/multilingual/multi-dataset/xtts_v1").to(device)
 
 
 
