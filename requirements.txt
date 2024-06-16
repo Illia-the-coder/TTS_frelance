@@ -1,3 +1,4 @@
 gradio 
 TTS 
 docx2txt 
+deepspeed==0.10.3

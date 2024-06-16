@@ -16,7 +16,7 @@ def initialize_model():
     config = XttsConfig()
     config.load_json(f"{model_file}/config.json")
     model = Xtts.init_from_config(config)
-    model.load_checkpoint(config, checkpoint_dir=f"{model_file}/model.pth", use_deepspeed=True)
+    model.load_checkpoint(config, checkpoint_dir=f"{model_file}", use_deepspeed=True)
     model.cuda()
     return model
 
