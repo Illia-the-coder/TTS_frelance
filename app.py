@@ -11,7 +11,7 @@ folder = './TTS_frelance'
 os.environ["COQUI_TOS_AGREED"] = "1"
 
 
-tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to("gpu")
+tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to("cuda")
 
 
 
